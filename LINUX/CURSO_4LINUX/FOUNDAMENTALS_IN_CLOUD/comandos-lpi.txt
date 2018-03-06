@@ -1,0 +1,151 @@
+cat - comando para visualizar arquivos na tela
+cat -b passwd - numera as linhas de um arquivo que não forem vazias
+cat -T passwd - Mostra as linhas de tabulação com ^I
+cat -A passwd - Mostra todos os caracteres, inclusive o "enter"
+cat -n passwd - numera todas as linhas inclusive linhas vazias
+cat -E passwd - Mostra um sinal de $ após o final de cada linha 
+
+nl - comando que lista linhas de um arquivo, similar ao cat -b
+nl -ba /etc/lilo.conf - numera todas as linhas inclusive linhas em branco
+nl -bt /etc/passwd - numera todas as linhas que não são vazias
+
+wc - contador de palavras, letras e linhas
+wc -m - conta a quantidade de caracteres de um arquivo
+wc -b - conta a quantidade de bytes, ou seja, espaço em branco, etc
+wc -l - conta a quantidade de linhas de um aquivo
+
+head - Comando que lista o inicio de um arquivo
+head -n 10 file - MOstra as 10 primeiras linhas de um arquivo
+head -c12 file - mostar os 12 primeiros caracteres do arquivo teste 
+
+tail - Mostra o final de um arquivo
+tail -200 teste - mostra as ultimas duzentas linhas de arquivo teste
+tail +200 teste - MOstra a partir da linha duzentos do arquivo teste
+tail -f teste - mostra o conteudo do arquivo em tempo real
+tail -c12 teste - conta os doze primeiros caracteres do final de um arquivo.
+tail -fs2 teste - mostra em tempo real o conteudo do arquivo fazendo uma checagem de 2 em 2 segundos.
+
+echo - imprime um conteudo na tela
+echo -e "teste\n" - habilita o reconhecimento do backspace e imprime teste e pula uma linha
+echo -E "teste\n" - desabilita o reconhecimento do backspace e, neste caso ele não irá pular uma linha, mas imprimira o \n
+echo -e "teste\tteste" - imprime teste e imprime novamente após uma tabulação horizontal
+echo -e "teste\vteste" - imprime teste e imprime novamente após uma tabulação vertical (escadinha)
+
+rm - Remove um conteudo
+rm -i arquivo - apresenta um prompt para remover um arquivo
+rm -I arquivo - apresenta um prompt em caso de remoção recursiva ou em mais de 3 arquivos
+rm -f arquivo - força a remoção de um arquivo
+rm -rf diretorio - forçã a remoção de um diretório e seu conteudo recursivamente.
+rm -d diretoirio - remove um conteudo vazio
+
+ls - listagem de arquivos e diretórios
+ls -a  - imprime o conteudo do diretório atual incluindo arquivos ocultos.
+ls -l - mostra o conteudo em listas
+ls -i - apresenta o endereço do inod do arquivo
+ls -h - apresenta o tamanho do arquivo em saida humana
+ls -t - lista com os arquivos mais novos em primeiro lugar
+ls -r - inverte a ordem de ordenação
+
+file - mostra o tipo do arquivo
+file teste.txt - mostra o tipo de arquivo teste.txt
+
+mv - renomeia ou move um arquivo
+mv -i arquivo arquivo1 - pergunta antes de sobrescrever
+mv -f arquivo arquivo1 - não pergunta antes de sobrescrever
+mv -n arquivo arquivo1 - nao sobrescreve nenhum conteudo
+mv -u arquivo arquivo1 - sobrescreve somente se o arquivo de origem for mais novo ou não conter no local de destino.
+
+dd - Faz cópia bit a bit
+=============================================================
+if = input file
+of= output file
+ibs=escreve os bytes por vez (padrão 512)
+obs=grava os bytes por vez (padrão 512)
+conv= realiza conversão a partir de uma lista:
+noerror= não para o processamento em caso de erros sync = caso um bloco não seja preenchido por completo, dados nulos são inseridos notrunc= os dados não sao truncados ao final e são mantidos integros.
+==============================================================
+Criar uma imagem 
+dd if=/dev/sr0(cd montado) of=/sdb1/imagem.iso (diretório montado em sdb1 e o arquivo que sera criado com o nome de imagem.iso)  bs=2048 (tamanho do bloco de 2048) conv=noerror,sync 
+dd if=/dev/sr0 of=/sdb1/imagem.iso bs=2048 conv=noerror,sync
+Clonar uma partição
+dd if=/dev/sdb1of=/dev/sdc1 bs=4096 conv=noerror
+Clonar um disco
+dd if=/dev/sdb of=/dev/sdc bs=1M conv=noerror
+Backup do MBR incluindo tabela de partição
+dd if=/dev/sda(O sistema operacional fica instalado na unidade a) of=/dev/sdc1/MBR.img(salvará dentro de sdc1) bs=512(a partição MBR possui 512 blocos) count=1 (ele vai copiar somente uma partição de 512 blocos (bs=512))
+dd if=/dev/sda of=/sdc1/MBR.img bs=512 count=1
+
+split - Divide o arquivo em partes
+split -b 30M arquivo arq. - Dividirá o arquivo em partes de 30 M e a saida será arq.*
+split -b 12k arquivo arquivo-split- divide o arquivo em 12k com o nome de saida de arquivo-split*
+
+tac - imprime arquivo em ordem ao contraria
+tac -b teste - imprime o arquivo teste com o conteudo em uma unica linha caso tenha espaço
+tac arquivo - imprime o conteudo de arquivo em orgem invertida.
+
+
+
+
+dpkg-reconfigure keyboard-configuration - Reconfigura o layout do teclado no debian
+/etc/init.d/keyboard-setup - Reinicia a configuração de teclado após uma confiduração.
+loadkeys -d br-abnt - reconfigura o layout do teclado no centos, estas ações serão temporárias, para comfigurar de maneira permanente deve-se utilizar o system-config-keyboard
+loadkeys -d us-acentos - reconfigura leyout para teclados sem acentos.
+uname -r - ver versão do kernel
+uname -a - ver versão de kernel com todoas as informações disponíveis
+cat /proc/cpuinfo - ver quantidade e informações de cpu
+cat /proc/meminfo - ver quantidade e/ou informações de memória
+free -m - ver informações de memória 
+free -h - ver informações de memoria em saida humana
+lsb_release -s - Ver distribuição do SO (Debian)
+cat /etc/debian_version - Ver distribuição no debian
+cat /etc/redhat-release - Ver distribuição do redhat
+fdisk -l - ver informações do disco 
+- Ver informações do disco selecionado
+df -h Ver partições montadas e espaço em disco usado 
+df -Th - Ver partições montadas e também o tipo da partição 
+du -hs /var/log/ - Ver o taanho do diretório do log com saide para leitura humana e um resumo (summary)
+uptima - Verifica a carga do processador , o tempo em que a máquina está ligada, horario , entre outros. As cargas são apresentadas baseada na média do ultimo minuto, dos ultimos cinco minutos e dos ultimos quinze minutos.
+hostname - Mostra o nome do servidor
+ip a - Mostra o ip do servidor 
+ip addr show - mostra o ip do servidor 
+ip address - Mostra o ip do servidor
+ifconfig - mostra o ip do servidor no debian
+ip route show - mostra o gateway padrão no centos 
+route -n - mostra o gateway padrão no debian
+/etc/resolv.conf - Arquivo para armazenamento de configração de endereços dns
+ss -ntpl - Similar ao comando netstat para o centos 7 
+netstat - comando para listar serviços e estado de portas
+dpkg -l | grep apache - Pesquisa um pacote instalado no debian
+rpm -qa | grep apache - pesquisa um pacote instalado no centos
+cat /etc/ /etc/hosts &> tudo - Adiciona tudo ao um arquivo 
+ln -s /etc/hosts ~/link - Cria um arquivo (link simbolico) do arquivo hosts para a raiz com o nome de link. No link simbolico é criado somente um link, possuem numeros de nó (inod) diferentes. Não funciona se o arquivo original for removido.
+ln /etc/hosts ~/hosts - Cria um hardlink(links fisicos) do arquivo hosts para o um arquivo chamado hosts , na raiz ... o hard link diferente do link simbolico possui o mesmo numero de nó/inod (endereço fisico) do original, desta maneira ele faz um apontamento do link para o mesmo endereço fisico do original , e caso o original seja removido, o link continuará funcionando, suas limitações são ele trabalha somente no mesmo sistema de arquivos, e não é permitido criar links de diretórios.
+stat /etc/passwd - Mostra informações sobre o arquivo passwd como : numero do inod, permissões, tipo de arquivo, tamanho, udi, guid, etc...
+ls -i - Para identificar se um arquivo é um link simbolico
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

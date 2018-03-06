@@ -1,0 +1,23 @@
+## Pacote padrão usado pelo ftp é o Very Secure FTP Deamon (vsftpd).
+## Pacote para configuração de servidor de e-mail usado pelo Fedora (sendmail), pelo rhel (postfix) e há também o exim.
+## Pacote do servidor web apache é o httpd.
+## Pacote para servidor de impressão é o cups.
+## Pacote para o Windows File Server é o samba.
+## Pacote usado para NFS é nfs-utils.
+## Pacote para servidor de DNS é o bind.
+## Pacote usado para servidor NTP é o ntpd.
+## systemd é o responsável por gerenciar serviços, usado no Fedora e Ubuntu, e System V no RHEL.
+## O xinetd tem por principal função carregar serviços/deamon somente quando necessários, era muito utilizado antigamente quando a memória ainda era cara.
+## Algumas dicas de segurança:
+- Nao permitir login direto como root
+- Restringir portas através de firewall
+- Utilizar TCP Wrappers e adicionar os hosts/ip que podem acessar no arquivo /etc/hosts.allow e /etc/hosts/deny. Pcote usado é libwrap
+- SELinux (Security Enhanced Linux) aumenta a segurança garantindo que os serviços acessem apenas o conteúdo apontado nos arquivos de configuração.
+- Nos proprios arquivos de configuração dos serviços.
+## O recurso sar (disponivel no pacote sysstat) observa atividades no sistema, memória, cpu, etc. Sendo executado 24 horas de minutos em minutos.
+## chkconfig é usado para definir serviços de inicialização ou status de serviço no rhel. ex chkconfig ssh on (habilita o sshd para iniciar automaticamente) 
+## observações SSH 
+- Quando acessamos um servidor remotamente, recebemos uma chave publica do servidor e é armazenada dentro de .ssh/know_hosts.
+- A opção PermitRootLogin informa se é permitida a conexão via ssh com o usuário root.
+- executando comandos remotos. ex ssh root@10.10.10.10 "cat /etc/hosts" ou localhost. Para espaços é necessário usar aspas.
+- A opção X11Forwarding habilita a utilização de interfaces graficas em conexões remotas, para isso a conexão deve ser feita usando ssh -X.

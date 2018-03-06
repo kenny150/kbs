@@ -1,0 +1,19 @@
+##opções do YUM
+
+yum erase = remove apenas o pacote, sem afetar suas dependencias.
+yumdownloader =  faz o download de um .rpm, mas não instala.
+yum history = lista o histórico do yum 
+yum info <numero> = lista a informação obtida da listagem de histórico do yum.
+yum undo <numero> = desfaz a alteração feita.
+yum check-update = verifica atualizações
+yum update = atualiza 
+yum groupinfo = lista os grupos e pacotes de um determinado programa, ex; yum group info LXDE.
+yum groupinstall = instala os compomentes do grupo (pacotes, etc). ex; yum groupinstall LXDE.
+yum groupremove = remove um grupo instalado. ex; yum groupremove LXDE.
+yum clean packages = apaga o cache dos pacotes do repositório.
+yum clean all = limpa todo o cache.
+yum grouplist = lista os grupos instalados.
+yum reinstall = reinstala um pacote apenas.
+yum provides = identifica o pacote de um arquivo. ex; yum provides dvdrecord
+yum list {<nome_do_pacote>,available,installed, all}= lista nome de pacotes.
+yum clean rpmdb = limpa e reinstala os componentes do banco de dados do rpm. 

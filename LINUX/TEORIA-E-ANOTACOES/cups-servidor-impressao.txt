@@ -1,0 +1,21 @@
+## Cups - Servidor de impressão
+
+http://localhost:631 = Acesso as configurações das impressoras através do navegador.
+/etc/cups/ = diretório onde contém os arquivos de configuração do cups.
+/etc/cups/cupsd.conf = Arquivo onde ficam as configurações de autenticação, permissão, etc.
+/etc/cups/printers.conf = Endereços e informações para as impressoras configuradas.
+/etc/cups/classes;conf = Classes de impressoras locais.
+lpr tetse.txt = imprime teste.txt usando a impresspra padrão via linha de comando.
+lpr -P impressora1 teste.txt = imprime usando a impressora1 o documento teste.txt
+-# 4 = imprime mais quatro cópias.
+export PRINTER=impressora2 = Altera a impressora padrão.
+/usr/sbin/lpc status = Verifica o status das impresspras.
+lprm -P impressora1 = remove os trabalhos atuais da impressora específica.
+lprm - = limpa todos os trabalhos de impressão do usuário atual.
+lprm -U mike = remove todos os trabalhos de impressão do usuáro mike.
+lpq = pesquisa o que está sendo impresso, retornando o numero do job da impressão.
+lprm 133 = remove da fila a impressão cujo job é numero 133.
+vim /etc/cups/printers.conf > Shared yes = a opção deve estar marcada como yes para que se possa compartilhar uma impressora.
+yum install cups-ldp && chkconfig cups-ldp on = Instala o serviços LDP e habilita a inicializão automatica. Caso for necessário instala-lo.
+
+

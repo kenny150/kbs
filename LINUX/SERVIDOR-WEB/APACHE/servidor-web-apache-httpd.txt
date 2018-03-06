@@ -1,0 +1,43 @@
+
+/etc/httpd/conf/httpd.conf = Principal arquivo de configuração do apache.
+/etc/sysconfig/httpd = Opçẽs usadas em linha de comando deamon.
+/etc/httpd/conf/magic.conf = Define as regras que o servidor pode usar para tentar descobrir o tipo de um arquivo quando o servidor tenta abri-lo
+/etc/httpd/conf/welcome.conf = Define a página inicial do site até existir algum conteúdo.
+/etc/logrotate.d/httpd = Define quando os arquivos de log produzidos pelo apache são rodados.
+/etc/tmpfiles.d/httpd.conf = Define o local dos arquivos executáveis temporários.
+/var/www/error = As ultimas entradas estão dentro deste diretório.
+/etc/httpd/conf.d/ssl.conf =  Arquivo de configuração do ssl.
+<directory> </directory> = Esta tag define onde é o diretório raiz no sistema de arquivos.
+<files> </files> = tag usada para especificar arquivos pelo nome, podem estar dentro da tag directory.
+<localtion> </localtion> = tag usada para acessar arquivos ou pastas, diferente da location ela lida com o endereço contido e não com o endereço do arquivo no disco.
+DirectoryIndex = Diz o que o apache deve carregar quando a URL contem o diretório, mas não contem o nome do arquivo.Não funciona dentro da tag files.
+Options = Usada para mostrar como o apache lida com os arquivos dentro de um diretório.
+ServerRoot = Indica onde é o arquivo de configuração, log, pid são aramzenados. ex : ServerRoot "/etc/httpd"
+PidFile = Indica o local onde é gravado o arquivo de PID. ex : PidFile run/httpd.pid 
+ScriptAlias = Diz onde o arquivo cgi pode ser localizado. ex : ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+FollowSymLinks = Permite seguir arquivos simobilicamente vinculados a outros arquivos. 
+AlowOverride = impede que arquivos com permissões em .htaccess escrevam no diretório /. 
+Order = Permite o nega acesso a uma maquina.
+Allow = Somente hosts selecionados pode acessar o diretório (nesta configuração abaixo, diretório "/".
+ex : <directory /> Options FollowSymLinks 
+                   AlowOverride None
+		   Order allow,deny
+		   Allow from all
+     </directory> 
+NameVirtualHost = Quando habilitado, o DocumentRoot padrão deixa de ser usado, ele será buscado após a leitura dos containers VirtualHost configurados.
+ex :
+NameVirtualHost *:80                       //Qualquer requisição vinda da porta 80 será tratada dessa maneira (configuração abaixo).
+<VirtualHost *:80>			   //O * pode ser substituido por um ip especifico, a porta é opcional.	
+  ServerAdmin	webmaster@exemplo.com      //Nome do endereço de e-mail em caso de erros.
+  ServerName	www.meusite.com.br         //url do site
+  ServerAlias	meusite.com.br             //redirecionamento
+  DocumentRoot	/vae/www/html/             //arquivos do site
+DirectoryIndex	index.php index.html index.htm   //produre por estes arquivos caso não seja especificado pelo usuário.
+</VirtualHost>
+apachectl configtest = checa as configurações do apache
+apachectl graceful = reinicia o apache
+openssl genrsa -out servidor.key 1024 = Este comando gera um certificado para conexões https.
+openssl genrsa -des3 -out servidor.key 1024 =  Usando o algoritmo des3 para criptografar a chave privada.
+
+
+

@@ -1,0 +1,56 @@
+## Gerenciamento de disco
+## Sempre após a criação de uma nova partição de sistemas de arquivos, o linux automaticamente sincroniza o novo disco com o kernel. Se o disco estiver montado pode ser que impeça a soncronização automatica.
+## Tipos de arquivos VFAT permitem o compartilhamento entre Linux. Windows e MAC.
+## O arquivo /etc/fstab é lido na inicialização do sistema e montará os discos de acordo como está descrito:
+exemplo : /dev/sdb1/  /mnt/pendrive/   defaults    0  1 
+A linha acima indica que o dispositivo sdb1 será montado no diretório pendrive, o defaults diz que o sistema deve montar automaticamente ao iniciar o 0 indica que não deve ser feito backup e o 1 indica que o sistema deve verificar a partição após a montagem. As opções dos campos passados no fstab estão disponiveis em man mount (opção -o)
+## O diretório /proc/partitions listará as partições sincronizadas no sistema, caso não sejam listadas, o comando que deve ser utilizado é o partprobe ou ou reinicie o sistema.
+## /dev/mapper/ é o local onde os volumes lógicos criados ficarão visiveis.
+## Os passos para trabalhar com LVM são: 
+Criar uma partição fisica (ex;sdb1) e defini o sistema de arquivos,
+definir o tipo da partição como (LVM.swap, NTFS, etc)
+criar uma partição virtual com pvcreate a partir da partição fisica criada (sdb1)
+pegar uma partição fisica com o tipo de partição LVM e criar um grupo de volume a parti dela
+criar os volumes logicos dentro do volume grupo criado
+montar os volumes logicos criados os volumes lógicos devem ter o sistema de arquivos definidos assim como os fisicos (ext2, 3, 4, swap, etc). 
+## Sistemas de arquivos suportados pelo linux mais comuns: 
+CIFS (Common Internet Filesystem): sistema de arquivos virtual usado para acessar servidores com a especificação SNIA CIFS, é uma tentativa de padronizar e evoluir o protocolo SMB usado para compartilhar o sistema de arquivos do Windows.
+EXT: O padrao do Linux, hoje a utilizada é a EXT4.
+iso9660: Geralmente utilizado pelos CD-ROMs.
+MSDOS: Pode ser usado para montar disquetes que vem de Windows.
+VFAT: sistemas de arquivo FAT estendida da Microsoft.
+PROC: Não é um sistema de arquivos, mas através dele podemos ter acesso as informações do kernel do linux.
+SWAP: Partições de troca. Usada quando a memória está toda e uso, alocando assim os dados e devolvendo depois.
+SQUASHFS: sistema de arquivos compactados, usado geralmente em cds LIVE onde não há muito espaço disponível.
+NFS: network filesystem, monta arquivos linux ouo outros sistemas UNIX.
+NTFS: Sistema de arquivos Windows NT.
+## Quando uma partição é do tipo LVM ela inicia com /dev/mapper/
+
+partprobe = esse comando sincroniza o disco (partição) adicionado com o kernel caso não ocorra automaticamente. ex; partrobe /dev/sdb
+fdisk = Pega uma unidade fisica e monta a partição permanente (sdb1,sdb2,sdb3,etc). ex; fdisk /dev/sdb/
+mkfs -t sistema de arquivos /particao/ = Cria o sistema de arquivos do dispositivo. ex; mkfs -t ext4 /dev/sdb1
+mount /disco/ /diretório/ = monta o disco. ex; mount /dev/sdb1 /mnt/pendrive/
+umount = desmonta uma particao.ex; umount /dev/sdb1
+mkswap = cria um sistema de arquivos do tipo troca (swap). ex; mkswap /dev/sdb3 
+pvdisplay = mostra informações sobre uma partição virtual. ex; pvdisplay /dev/sdb6
+pvcreate = cria uma partição virtual.ex; pvcreate /dev/sdb6
+vgcreate = cria um grupo de volume.
+vgextend = estende um grupo de volume.ex; vgextend volume /dev/sdc1  
+vgdisplay = lista informações de um grupo de volume. ex; vgdisplay vg_abc
+lvdisplay = mostra como foram alocados os recursos do grupo de colume. ex; lvdisplay vg_abc
+lvcreate = cria um volume lógico.
+lvextend = estende o disco lógico usando o espaço disponível no grupo de volume.
+resize2fs = redimensiona o disco após expansão.ex; resize2fs /dev/mapper/volume1-fotos.
+swapon = ativa uma partição do tipo swap para uso caso necessário. Esse recurso é temporario, caso deva ser montado na inicialização deve ser adicionado ao /etc/fstab. ex swapon /dev/sdb2. Para acresentar do fstab ficaria assim /dev/sdb2  swap    swap    defaults   0   0 
+swapoff = desativa a área de troca. ex;swapoff /dev/sdb2 .
+blkid = lista os UUID's dos discos disponíveis.
+lsof = mostra o que está mantendo um sistema de arquivos no qual deseja-se desmontar aberto.ex; lsof /mnt/temp
+fuser = mostra que usuário está usando o sistema de arquivo no qual deseja desmontar.ex; fuser -v /mnt/temp
+
+
+
+
+ 
+ 
+
+

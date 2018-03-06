@@ -1,0 +1,179 @@
+
+## Inicialização de serviços no linux
+init, SysVinit, Systemd, Upstart = São deamons de inicialização, de acordo com cada distribuição linux.
+
+NOTA: Os runlevels são os serviços que são carregados no sistema, dentro do arquivo /etc/inittab ficam armazenados as configurações desses runlevels, para distribuições um pouco mais antigas, no Fedora 22 não há mais o arquivo /etc/inittab.
+Os runlevels vão de 0 a 6 , abaixo uma breve descrição de cada um:
+
+0= Suspende a atividade no compuador, parando todos os serviços.
+1= Modo monousuário, somente o root consegue logar, a interface grafica nem o serviço de rede são iniciados.
+2= Modo multiusuário, embora os serviços de rede e interface gráfica ainda não são carregados.
+3= Os serviços de rede são iniciados, multiusuários podem se logar, mas a interface gráfica não é carregada.
+4= Usuários podem personalizar essa execução 
+5= Os usuários podem fazer login, os serviços de rede e interface gráfica são iniciados.
+6= servidor reiniciado.
+
+init = comando que executa um determinado runlevel. ex: init 0 (fará com que o servidor seja desligado).
+runlevel = comando utilizado para ver qual o runlevel atual do servidor. ex; runlevel
+telinit = mesma funcionalidade do init.ex telinit 6 (reiniciará o servidor)
+
+NOTA: Para definir um runlevel personalizado (4), devemos alocar o scripts(links simbolicos para scripts) dentro de /etc/rc.d/rc4.d/; Isso fará com que ao chamar o runlevel 4 , todos os scripts dentro deste diretório serão carregados. Nos diretórios /etc/rc.d/rc{0,1,2,3,4,5}.d/ estão os arquivos de cada runlevel. Chame-os iniciando o init 0 ou init 1 (até o 5 , por exemplo). O diretório de script ficam em /etc/rc.d/init.d/ ou /etc/init.d/ ou /etc/rc.d/.
+
+O fluxo de carregamento do sistema usando runlevel é baseado na leitura dos diretórios /etc/rc.d/rc#.d/ . Desta forma é lido cada diretório de uma vez, por ordem e ao final da leitura de todos os diretórios, os serviços já estarão carregados e o sistema pronto para uso.
+
+
+##SysVinit
+
+## Para checar serviços inicializados como runlevel em deamons SysVinit, o comando que pode ser usado é chkconfig --list
+
+[kalves@fedora22 ~]$ chkconfig --list
+
+livesys        	0:não	1:não	2:não	3:sim	4:sim	5:sim	6:não
+livesys-late   	0:não	1:não	2:não	3:sim	4:sim	5:sim	6:não
+netconsole     	0:não	1:não	2:não	3:não	4:não	5:não	6:não
+network        	0:não	1:não	2:não	3:não	4:não	5:não	6:não
+ 
+## Para checar se um serviço está rodando em deamons sysVinit: service sshd status
+
+## para configurar serviços persistentes (inicialização automatica) em sysvinit, o comando utilizado é chkconfig, no exemplo abaixo verifico que o serviço network possui persistencia.
+
+chkconfig --list network 
+network        	0:não	1:não	2:não	3:não	4:não	5:não	6:não
+
+A saída mostra que este serviço nao inicia em nenhum runlevel e dentro do diretório de retrocompatibilidade há alguns apontamentos que iniciam com a letra K,isso mostra que a inicialização está desativada, a letra S diz que ela está ativada, como no exemplo do livesys
+
+[kalves@fedora22 rc0.d]$ ls /etc/rc.d/rc*.d/
+/etc/rc.d/rc0.d/:
+K01livesys-late  K50netconsole  K90network  K99livesys
+
+/etc/rc.d/rc1.d/:
+K01livesys-late  K50netconsole  K90network  K99livesys
+
+/etc/rc.d/rc2.d/:
+K01livesys-late  K50netconsole  K90network  K99livesys
+
+/etc/rc.d/rc3.d/:
+K50netconsole  K90network  S00livesys  S99livesys-late
+
+/etc/rc.d/rc4.d/:
+K50netconsole  K90network  S00livesys  S99livesys-late
+
+/etc/rc.d/rc5.d/:
+K50netconsole  K90network  S00livesys  S99livesys-late
+
+/etc/rc.d/rc6.d/:
+K01livesys-late  K50netconsole  K90network  K99livesys
+
+chkconfig --list livesys
+livesys        	0:não	1:não	2:não	3:sim	4:sim	5:sim	6:não
+
+## Para tornar um serviço persistente o comando é chkconfig --level 2345 network on. O 2345 neste exemplo é o runlevel.
+
+## Para desativar um serviço da inicialização o comandoé o mesmo, porem ao invés do on deve-se usar o off (chkconfig --level 2345 network off)
+
+ACRESCENTANDO NOVOS SERVIÇOS AO SYSVINIT
+
+Passos: 
+-Criar o scripts
+-Adicionar ao /etc/rc.d/init.d/
+-Configurar o runlevel caso queira inicialização automatica
+
+O Exemplo abaixo, vou criar um script com inicialização automatica no runlevel 3.
+
+touch /etc/rc.d/init.d/meu_script
+cd /etc/rc.d/rc3.d/
+ln -s /etc/rc.d/init.d/meu_script
+
+## Upstart 
+
+Os deamons sysvinit e bsd init são usados nos sistemas Unix, os deamons mais modernos como o upstart e o systemd que são baseados em sysinit e bsd init possuem ainda retrocompatibilidade. O init Upstart trabalha de uma forma diferenca do deamon sysinit, ele tabalha de forma dinamica, baseada em um evento (inserção de um dispositivo usb, ligar dispositivo bluetoth, etc), diferente dos SO's antigos que possuiam runlevel, tornando o carregamento estatico.
+
+O diretório de leitura dos scripts deste deamon é o /etc/init/*.conf . Aqui os arquivos contidos neste diretório são lidos e executados , após conclusão o sistema é dado como iniciado. O arquivo inittab não é mais usado, embora ainda haja ele disponível e ainda é possível utiliza-lo. Para usa-lo, devemos configurar o /etc/inittab e em seguida iniciar a tarefa rc (initctl start rc). O rc fara com que seja feita uma leitura dos diretórios de scripts de runlevel (/etc/rc.d/rc#.d/) e com isso o sistema passará a ler tbm.
+
+exemplo de uso do upstart:
+
+initctl start cupsd = inicia o deamon cups (serviço de impressão).
+
+## Em deamosn upstart init os comandos que podem ser usados para verificar os serviços que foram inicializados são initcl list . 
+NOTA: Como nem todos os serviços foram migrados do sysvinit para o upstart, o comando service status <nome_do_servico> ainda pode ser necessáio.
+
+Para configurar um serviço persistente no upstart, é necessário acessar o arquivo de configuração do serviço que será iniciado. Exemplo, 
+cat /etc/init/ssh.conf (o diretório dos arquivos de configuração dos serviços ficam dentro de /etc/init)
+Então acrescentar conforme o exemplo abaixo:
+start on filesystem or runlevel [2345]
+stop on runlevel [!2345]
+
+ACRESCENTANDO NOVOS SERVIÇOS NO UPSTART	
+Passos:
+-Criar um arquivo dentro de /etc/init/
+-Configurar os run levels dentro do arquivo (start on filesystem or runlevel [2345])
+
+exemplo:
+touch /etc/init/meu_service
+initctl emit meu_servico
+
+
+
+
+## Systemd
+
+O systemd possui uma inicialização do sistema mais rápida porque ele inicia menos serviços, e de forma paralela. Os níveis de execução no systemd são chamados de target units, onde uma unidade é um grupo, nome ou arquivo de configuração que se encontra em um determinado serviço.
+No systemd os service units são unidades de serviços, são gerenciadores de serviço do sistema, já o target units (unidades alvo) são grupos de outras unidades.
+Os arquivos de configuração do systemd estão localizados nos diretórios /lib/systemd/system e /etc/systemd/system. Os arquivos de configuração possuem um status, disabled, enabled ou static. O status desabled significa que a unidade está desabilitada, enabled significa que está habilitada e statis significa que o arquivo não pode ser alterado nem mesmo pelo usuário root.
+
+A inicialização do sistema com systemd ocorre da seguinte forma, dentro do diretório /etc/systemd/system há um arquivo chamado default.target, ele que por sua vez requer a inicialização do multi-user.target e suas dependencias, após a inicialização  o sistema completou sua inicialização.
+
+A retrocompatibilidade no systemd é feita através dos arquivos localizados em /lib/systemd/system/runlevel* . O fluxo é o mesmo aplicado para o upstart, dentro deste diretório possuem apontamentos para units targets para execução dos runlevels. O conceito é o mesmo, o inittab ainda existe, porem não é usado, no arquivo contém uma nota informando que ele não é mais utilizado.
+Ex:
+
+[kalves@fedora22 ~]$ ls -l /lib/systemd/system/runlevel*
+lrwxrwxrwx. 1 root root   15 Jan  7  2016 /lib/systemd/system/runlevel0.target -> poweroff.target
+lrwxrwxrwx. 1 root root   13 Jan  7  2016 /lib/systemd/system/runlevel1.target -> rescue.target
+lrwxrwxrwx. 1 root root   17 Jan  7  2016 /lib/systemd/system/runlevel2.target -> multi-user.target
+lrwxrwxrwx. 1 root root   17 Jan  7  2016 /lib/systemd/system/runlevel3.target -> multi-user.target
+lrwxrwxrwx. 1 root root   17 Jan  7  2016 /lib/systemd/system/runlevel4.target -> multi-user.target
+lrwxrwxrwx. 1 root root   16 Jan  7  2016 /lib/systemd/system/runlevel5.target -> graphical.target
+lrwxrwxrwx. 1 root root   13 Jan  7  2016 /lib/systemd/system/runlevel6.target -> reboot.target
+ 
+exemplo de systemd
+
+systemctl status sshd = verifica o status do serviço de ssh.
+
+Para um deamon init do ttipo systemd o comando usado para verificar os serviços são systemctl list-units-files --type=service | grep -v disabled 
+
+Para checar o status de um único serviço o comando é systemctl status cups.service
+
+Para habilitar um serviço o comando é systemctl enable cups.service, para desabilitar, trocar enable por disable.
+
+Os services target que estão com o status de static não podem ser alterado, desta forma quando damos o comando para habilitar ou desabilitar um serviço com status de static simplismente ele é ignorado.
+
+ACRESCENTANDO NOVOS SERVIÇOS NO SYTEMD
+
+Passos:
+-Criar um scripts em /etc/systemd/system
+-adicionar o script a uma target (runlevel)
+-criar um link simbolico dentro da target selecionada
+-dar um reload no deamon
+exemplo:
+
+touch /etc/systemd/system/meu_servico
+vi /etc/systemd/system/meu_servico
+        
+	[install]
+	WanterBy=multi-user.target
+
+ln -s /etc/systemd/system/meu_servico /etc/system.d/system/multi-user.target.wants/meu_servico
+systemctl deamon reload
+
+
+
+
+
+
+ 
+
+
+
+
+
+

@@ -1,0 +1,37 @@
+## Os ID's dos grupos especiais de administradores são abaixo de 500, ou seja, de 0 a 499. Os de 500 acima são ids de grupos regulares.
+## Para montar um arquivo com as acl's carregadas por padrão, adicione a palavra acl no /etc/fstab 
+## O arquivo autofs permite que seja definido um diretório inicial para cada usuário ao se logar.
+## Metodos de autenticação:
+Padrão = verificação do /etc/passwd e /etc/shadow para se autenticar.
+LDAP = verificação em um servidor centralizador de acessos.
+LDAP search Base DN = Para configurar um servidor LDAP é necessário capturar a informação de DN dele, ou seja, o nome do dominio do servidor. ex; dc=exemplo,dc=com.
+LDAP server = ldap://exemplo.com
+Use TLS(transport layer security) encrypt = significa que será requerido um certificado para autenticação.
+Authentication method = ao inves de utilizar senha MD5 deverá usar metodos de autenticação kerberos ou LDAP.
+NIS(Network Information Service) = desenvolvido pela SUN , é uma maneira de autenticação em que a informação é passada em texto claro, ou seja não é muito seguro.
+WINBIND = Autenticação de usuários e servidores de Active directory
+
+
+
+## Gerenciar usuário.
+useradd -c = nome ou comentario
+useradd -s = shell do usuário. ex; /bin/bash
+useradd -g = grupo primario
+useradd -G = grupos a qual pertence separados por virgula.
+useradd -m = cria diretório inicial automaticamente.
+useradd -d = cria o diretório inicial
+useradd -D = altera balores padrão. (econtrados em /etc/login.dfs e /etc/default/useradd)
+usermod -L = bloqueia usuário
+usermod -U = desbloqueia usuário
+usermod -l = altera p nome de login
+usermod -Ga <grupo1,grupo2,grupo3> = adiciona o usuário aos novos grupos.
+newgrp <nome_do_grupo_que_fara_parte> = faz com que o usuário atual pertença a um determinado grupo temporariamente; ex; newgrp kalvesgroup ; Isso faz o que o usuário atual faça parte temporariamente do grupo kalvesgroup.
+gpasswd <nome_do_grupo_que_atribuira_senha> = define uma senha para um determinado grupo, e após isso qualquer usuário mesmo sem ter privilégios de root poderão fazer parte do grupo apenas digitando a senha. ex; gpasswd kalvesgroup.
+groupadd = adiciona um grupo
+groupadd -g <id_do_grupo> = permite definir o id de um grupo ao cria-lo.
+groupmod -n <nome_do_novo_grupo> <nome_antigo_grupo> = groupmod -n kalves kalvesgroup , renomeei o grupo kalvesgroup para kalves.
+setfacl -m u:usuario:rwx caminho até o arquivo = cria uma acl com permissão de leitura, escrita e gravação para o usuario escolhido, ao final informa o caminho até o arquivo.
+setfacl -m g:usuário:rwx caminho ate o arquivo =  permissão para um grupo sobre o arquivo.ex; setfacl -m u:kalves:rw /tmp/file.txt
+getfacl caminho ate o arquivo = lista as acls sobre um arquivo.ex; getfacl /etc/passwd  
+setfacl -m d:g:grupo:rwx diretório = define uma acl padrao para um local, neste caso qualquer diretório criado acima do diretório informado receberia permissão de rwx e o grupo informado .
+
